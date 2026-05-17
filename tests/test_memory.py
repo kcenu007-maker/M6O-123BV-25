@@ -1,15 +1,19 @@
 # tests/test_memory.py
 import unittest
 
+
 class TestMemory(unittest.TestCase):
 
     def test_student_table_allocation(self):
-        student_table = StudentTable() # NameError: name 'StudentTable' is not defined
+        student_table = StudentTable()  # NameError: name 'StudentTable' is not defined
         self.assertIsInstance(student_table, StudentTable)
         # src/db/backend/memory.py
+
+
 from src.db.backend.memory import StudentTable
 import unittest
 from src.db.backend.memory import StudentTable
+
 
 class TestMemory(unittest.TestCase):
 
@@ -21,9 +25,13 @@ class TestMemory(unittest.TestCase):
         test_data = (1, "John", "Doe", 20, "M")
 
         student_table = StudentTable()
-        record = student_table.create_record(*test_data) # AttributeError: 'StudentTable' object has no attribute 'create_record'
+        record = student_table.create_record(
+            *test_data
+        )  # AttributeError: 'StudentTable' object has no attribute 'create_record'
         self.assertEqual(record, test_data)
         import unittest
+
+
 from src.db.backend.memory import StudentTable
 from src.db.backend.errors import InvalidAgeError, DuplicateIDError
 
@@ -45,7 +53,9 @@ class TestMemory(unittest.TestCase):
         error_message = "Поле age не может быть отрицательным."
         student_table = StudentTable()
 
-        with self.assertRaises(InvalidAgeError) as context: # AssertionError: InvalidAgeError not raised
+        with self.assertRaises(
+            InvalidAgeError
+        ) as context:  # AssertionError: InvalidAgeError not raised
             student_table.create_record(*test_data)
 
         self.assertEqual(str(context.exception), error_message)
@@ -58,11 +68,15 @@ class TestMemory(unittest.TestCase):
 
         student_table.create_record(*test_data_1)
 
-        with self.assertRaises(DuplicateIDError) as context: # AssertionError: DuplicateIDError not raised
+        with self.assertRaises(
+            DuplicateIDError
+        ) as context:  # AssertionError: DuplicateIDError not raised
             student_table.create_record(*test_data_2)
 
-        self.assertEqual(str(context.exception), error_message)    
+        self.assertEqual(str(context.exception), error_message)
         import unittest
+
+
 from src.db.backend.memory import StudentTable
 from src.db.backend.errors import InvalidAgeError, DuplicateIDError
 
@@ -87,7 +101,7 @@ class TestMemory(unittest.TestCase):
             (10, "Ivy", "Anderson", 21, "F"),
             (11, "Jack", "Thomas", 18, "M"),
             (12, "Kathy", "Jackson", 23, "F"),
-            ]
+        ]
 
         for test_data in cases:
             # Используем subTest для изоляции каждого тестового случая и улучшения читаемости результатов тестирования.
@@ -121,8 +135,10 @@ class TestMemory(unittest.TestCase):
         with self.assertRaises(DuplicateIDError) as context:
             self.student_table.create_record(*test_data_2)
 
-        self.assertEqual(str(context.exception), error_message)  
+        self.assertEqual(str(context.exception), error_message)
         import unittest
+
+
 from src.db.backend.memory import StudentTable
 from src.db.backend.errors import InvalidAgeError, DuplicateIDError
 
@@ -147,7 +163,7 @@ class TestMemory(unittest.TestCase):
             (10, "Ivy", "Anderson", 21, "F"),
             (11, "Jack", "Thomas", 18, "M"),
             (12, "Kathy", "Jackson", 23, "F"),
-            ]
+        ]
 
         for test_data in cases:
             # Используем subTest для изоляции каждого тестового случая и улучшения читаемости результатов тестирования.
@@ -181,10 +197,14 @@ class TestMemory(unittest.TestCase):
         with self.assertRaises(DuplicateIDError) as context:
             self.student_table.create_record(*test_data_2)
 
-        self.assertEqual(str(context.exception), error_message)   
+        self.assertEqual(str(context.exception), error_message)
+
+
 import unittest
 from src.db.backend.memory import StudentTable
 from src.db.backend.errors import InvalidAgeError, DuplicateIDError
+
+
 class TestMemory(unittest.TestCase):
     def setUp(self):
         self.student_table = StudentTable()
