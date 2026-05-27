@@ -14,3 +14,9 @@ class DuplicateIDError(StudentTableError):
     """Ошибка, возникающая при попытке создать запись с уже существующим идентификатором."""
 
     pass
+
+
+class UnknownID(StudentTableError):
+    """Ошибка, возникающая при ненайденном ID"""
+
+    pass

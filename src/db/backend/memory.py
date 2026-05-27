@@ -1,4 +1,4 @@
-from .errors import InvalidAgeError, DuplicateIDError
+from .errors import InvalidAgeError, DuplicateIDError, UnknownID
 
 
 class StudentTable:
@@ -41,10 +41,12 @@ class StudentTable:
             if record[0] == student_id:
                 self._student[i] = (student_id, first_name, second_name, age, sex)
                 return self._student[i]
-        return None
+
+        raise UnknownID(f"Поле с ID {student_id} не найдено")
 
     def delete_record(self, student_id):
         for i, record in enumerate(self._student):
             if record[0] == student_id:
                 return self._student.pop(i)
-        return None
+
+        raise UnknownID(f"Поле с ID {student_id} не найдено")
