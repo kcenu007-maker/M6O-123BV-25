@@ -1,13 +1,13 @@
-# tests/test_memory.py
+
 import unittest
 
 
 class TestMemory(unittest.TestCase):
 
     def test_student_table_allocation(self):
-        student_table = StudentTable()  # NameError: name 'StudentTable' is not defined
+        student_table = StudentTable()  
         self.assertIsInstance(student_table, StudentTable)
-        # src/db/backend/memory.py
+       
 
 
 from src.db.backend.memory import StudentTable
