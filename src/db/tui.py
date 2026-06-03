@@ -1,9 +1,30 @@
-from .backend.memory import StudentTable
-from .backend.errors import StudentTableError
+from src.db.backend.file import FileDatabase
+from src.db.backend.memory import MemoryDatabase
+from src.db.backend.errors import DatabaseError, StudentTableError
 
 
 def main_menu():
-    db = StudentTable()
+    print("Выберите тип базы данных:")
+    print("1. In-memory (Оперативная память)")
+    print("2. File database (Файловое хранилище JSON)")
+
+    db_choice = input("Введите номер: ").strip()
+    if db_choice == "2":
+        db = FileDatabase()
+        print("Используется: Файловая БД.")
+    else:
+        db = MemoryDatabase()
+        print("Используется: In-memory БД.")
+
+    table_name = "students"
+
+    # Автоматически создаем таблицу при запуске, если её ещё нет
+    try:
+        db.create_table(
+            table_name, ("student_id", "first_name", "second_name", "age", "sex")
+        )
+    except Exception:
+        pass  # Если таблица уже есть на диске в FileDatabase, просто продолжаем
 
     while True:
         print("\n1. Добавить 2. Показать 3. Обновить 4. Удалить 0. Выход")
@@ -11,30 +32,50 @@ def main_menu():
 
         try:
             if choice == "1":
-                db.create_record(
-                    int(input("ID: ")),
-                    input("Имя: "),
-                    input("Фамилия: "),
-                    int(input("Возраст: ")),
-                    input("Пол: "),
-                )
+                record = {
+                    "student_id": int(input("ID: ")),
+                    "first_name": input("Имя: "),
+                    "second_name": input("Фамилия: "),
+                    "age": int(input("Возраст: ")),
+                    "sex": input("Пол: "),
+                }
+                db.insert_record(table_name, record)
+                print("Запись успешно добавлена.")
+
             elif choice == "2":
-                for r in db.select_record():
-                    print(r)
+                records = db.select_records(table_name)
+                for r in records:
+                    # Выводим в виде кортежа для сохранения стиля лабы №3
+                    print(
+                        (
+                            r["student_id"],
+                            r["first_name"],
+                            r["second_name"],
+                            r["age"],
+                            r["sex"],
+                        )
+                    )
+
             elif choice == "3":
-                db.update_record(
-                    int(input("ID: ")),
-                    input("Имя: "),
-                    input("Фамилия: "),
-                    int(input("Возраст: ")),
-                    input("Пол: "),
-                )
+                student_id = int(input("ID для обновления: "))
+                updated_data = {
+                    "first_name": input("Новое имя: "),
+                    "second_name": input("Новая фамилия: "),
+                    "age": int(input("Новый возраст: ")),
+                    "sex": input("Новый пол: "),
+                }
+                db.update_record(table_name, student_id, updated_data)
+                print("Запись обновлена.")
+
             elif choice == "4":
-                db.delete_record(int(input("ID для удаления: ")))
+                student_id = int(input("ID для удаления: "))
+                db.delete_record(table_name, student_id)
+                print("Запись удалена.")
+
             elif choice == "0":
                 print("До свидания!")
                 break
-        except (ValueError, StudentTableError) as e:
+        except (ValueError, DatabaseError, StudentTableError) as e:
             print(f"Ошибка: {e}")
 
 

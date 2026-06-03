@@ -1,8 +1,8 @@
-from .tui import run
+from .tui import main_menu
 
 
 def main():
-    run()
+    main_menu()
 
 
 if __name__ == "__main__":

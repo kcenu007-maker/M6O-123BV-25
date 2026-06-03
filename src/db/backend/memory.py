@@ -1,50 +1,78 @@
-from .errors import InvalidAgeError, DuplicateIDError
+from .database import Database
+from .errors import TableNotFoundError
+from .table import Table
+from typing import Any
 
 
+class MemoryDatabase(Database):
+    """База данных в оперативной памяти."""
+
+    def __init__(self) -> None:
+        self.tables: dict[str, Table] = {}
+
+    def _table_exists(self, table_name: str) -> bool:
+        return table_name in self.tables
+
+    def _load_table(self, table_name: str) -> Table:
+        if table_name not in self.tables:
+            raise TableNotFoundError(f"Таблица '{table_name}' не существует.")
+        return self.tables[table_name]
+
+    def _save_table(self, table_name: str, table: Table) -> None:
+        self.tables[table_name] = table
+
+
+# КЛАСС-ОБЕРТКА ДЛЯ СОВМЕСТИМОСТИ С СТАРЫМИ ТЕСТАМИ ИЗ ЛАБОРАТОРНОЙ №3
 class StudentTable:
     def __init__(self):
-        self._student = []
+        self.db = MemoryDatabase()
+        self.table_name = "students"
+        self.db.create_table(
+            self.table_name, ("student_id", "first_name", "second_name", "age", "sex")
+        )
 
     def create_record(self, student_id, first_name, second_name, age, sex):
-        if age < 0:
-            raise InvalidAgeError("Поле age не может быть отрицательным.")
-
-        if any(record[0] == student_id for record in self._student):
-            raise DuplicateIDError(f"Запись с id={student_id} уже существует.")
-
-        new_record = (student_id, first_name, second_name, age, sex)
-        self._student.append(new_record)
-        return new_record
+        record = {
+            "student_id": student_id,
+            "first_name": first_name,
+            "second_name": second_name,
+            "age": age,
+            "sex": sex,
+        }
+        self.db.insert_record(self.table_name, record)
+        return (student_id, first_name, second_name, age, sex)
 
     def select_record(
         self, student_id=None, first_name=None, second_name=None, age=None, sex=None
     ):
-        result = []
-        for record in self._student:
-            if student_id is not None and record[0] != student_id:
-                continue
-            if first_name is not None and record[1] != first_name:
-                continue
-            if second_name is not None and record[2] != second_name:
-                continue
-            if age is not None and record[3] != age:
-                continue
-            if sex is not None and record[4] != sex:
-                continue
-            result.append(record)
-        return result
+        filters = {}
+        if student_id is not None:
+            filters["student_id"] = student_id
+        if first_name is not None:
+            filters["first_name"] = first_name
+        if second_name is not None:
+            filters["second_name"] = second_name
+        if age is not None:
+            filters["age"] = age
+        if sex is not None:
+            filters["sex"] = sex
+
+        records = self.db.select_records(self.table_name, **filters)
+        return [
+            (r["student_id"], r["first_name"], r["second_name"], r["age"], r["sex"])
+            for r in records
+        ]
 
     def update_record(self, student_id, first_name, second_name, age, sex):
-        if age < 0:
-            raise InvalidAgeError("Поле age не может быть отрицательным.")
-        for i, record in enumerate(self._student):
-            if record[0] == student_id:
-                self._student[i] = (student_id, first_name, second_name, age, sex)
-                return self._student[i]
-        return None
+        updated_data = {
+            "first_name": first_name,
+            "second_name": second_name,
+            "age": age,
+            "sex": sex,
+        }
+        r = self.db.update_record(self.table_name, student_id, updated_data)
+        return (r["student_id"], r["first_name"], r["second_name"], r["age"], r["sex"])
 
     def delete_record(self, student_id):
-        for i, record in enumerate(self._student):
-            if record[0] == student_id:
-                return self._student.pop(i)
-        return None
+        r = self.db.delete_record(self.table_name, student_id)
+        return (r["student_id"], r["first_name"], r["second_name"], r["age"], r["sex"])

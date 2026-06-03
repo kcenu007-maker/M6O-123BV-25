@@ -1,13 +1,13 @@
 import json
 from pathlib import Path
-
+from typing import Any
 from .database import Database
 from .errors import InvalidStorageDataError, TableNotFoundError
 from .table import Table
 
 
 class FileDatabase(Database):
-    """База данных, которая хранит таблицы в JSON-файлах."""
+    """База данных, сохраняющая таблицы на диск в формате JSON."""
 
     def __init__(self, directory: str = "data") -> None:
         self.directory = Path(directory)
@@ -33,7 +33,6 @@ class FileDatabase(Database):
 
     def _save_table(self, table_name: str, table: Table) -> None:
         table_path = self._get_table_path(table_name)
-
         with table_path.open("w", encoding="utf-8") as file:
             json.dump(
                 self._serialize_table(table),
