@@ -10,7 +10,10 @@ class FileDatabase(Database):
     """База данных, сохраняющая таблицы на диск в формате JSON."""
 
     def __init__(self, directory: str = "data") -> None:
-        self.directory = Path(directory)
+        # Автоматически находим корень проекта (на 3 уровня вверх от этого файла)
+        base_path = Path(__file__).resolve().parent.parent.parent.parent
+        self.directory = base_path / directory
+        # Создаем папку data, если её нет
         self.directory.mkdir(parents=True, exist_ok=True)
 
     def _table_exists(self, table_name: str) -> bool:
@@ -33,6 +36,7 @@ class FileDatabase(Database):
 
     def _save_table(self, table_name: str, table: Table) -> None:
         table_path = self._get_table_path(table_name)
+        # Открываем файл и принудительно записываем данные на диск
         with table_path.open("w", encoding="utf-8") as file:
             json.dump(
                 self._serialize_table(table),

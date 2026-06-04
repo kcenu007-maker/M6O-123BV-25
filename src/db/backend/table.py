@@ -22,8 +22,6 @@ class Table:
                 self.insert_record(record)
 
     def insert_record(self, record: dict[str, Any]) -> None:
-        """Добавляет запись, если она соответствует схеме и правилам валидации."""
-        # Валидация схемы колонок
         missing_columns = [column for column in self.columns if column not in record]
         if missing_columns:
             raise MissingColumnError(
@@ -36,7 +34,7 @@ class Table:
                 f"Поле '{extra_columns[0]}' не определено в структуре."
             )
 
-        # Специфичная валидация из лабораторной №3 (Проверка возраста и дубликатов ID)
+        # Валидация из 3-й лабораторной работы
         if "age" in record and record["age"] < 0:
             raise InvalidAgeError("Поле age не может быть отрицательным.")
 
@@ -49,7 +47,6 @@ class Table:
         self.records.append(record.copy())
 
     def select_records(self, **filters: Any) -> list[dict[str, Any]]:
-        """Возвращает список записей, удовлетворяющих фильтрам."""
         unknown_filters = [key for key in filters if key not in self.columns]
         if unknown_filters:
             raise UnknownColumnError(
@@ -68,13 +65,11 @@ class Table:
     def update_record(
         self, student_id: int, updated_data: dict[str, Any]
     ) -> dict[str, Any]:
-        """Обновляет запись по её student_id."""
         if "age" in updated_data and updated_data["age"] < 0:
             raise InvalidAgeError("Поле age не может быть отрицательным.")
 
         for i, record in enumerate(self.records):
             if record.get("student_id") == student_id:
-                # Формируем новую запись
                 new_record = {"student_id": student_id}
                 for col in self.columns:
                     if col != "student_id":
@@ -85,7 +80,6 @@ class Table:
         raise UnknownID(f"Поле с ID {student_id} не найдено")
 
     def delete_record(self, student_id: int) -> dict[str, Any]:
-        """Удаляет запись по её student_id."""
         for i, record in enumerate(self.records):
             if record.get("student_id") == student_id:
                 return self.records.pop(i)

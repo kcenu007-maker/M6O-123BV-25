@@ -18,13 +18,12 @@ def main_menu():
 
     table_name = "students"
 
-    # Автоматически создаем таблицу при запуске, если её ещё нет
     try:
         db.create_table(
             table_name, ("student_id", "first_name", "second_name", "age", "sex")
         )
     except Exception:
-        pass  # Если таблица уже есть на диске в FileDatabase, просто продолжаем
+        pass
 
     while True:
         print("\n1. Добавить 2. Показать 3. Обновить 4. Удалить 0. Выход")
@@ -41,11 +40,14 @@ def main_menu():
                 }
                 db.insert_record(table_name, record)
                 print("Запись успешно добавлена.")
+                if db_choice == "2":
+                    print(f"Проверь файл по пути: {db._get_table_path(table_name)}")
 
             elif choice == "2":
                 records = db.select_records(table_name)
+                if not records:
+                    print("Таблица пуста.")
                 for r in records:
-                    # Выводим в виде кортежа для сохранения стиля лабы №3
                     print(
                         (
                             r["student_id"],
@@ -61,8 +63,8 @@ def main_menu():
                 updated_data = {
                     "first_name": input("Новое имя: "),
                     "second_name": input("Новая фамилия: "),
-                    "age": int(input("Новый возраст: ")),
-                    "sex": input("Новый пол: "),
+                    "age": int(input("Возраст: ")),
+                    "sex": input("Пол: "),
                 }
                 db.update_record(table_name, student_id, updated_data)
                 print("Запись обновлена.")
