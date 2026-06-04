@@ -22,7 +22,7 @@ class MemoryDatabase(Database):
         self.tables[table_name] = table
 
 
-# КЛАСС-ОБЕРТКА ДЛЯ СОВМЕСТИМОСТИ С СТАРЫМИ ТЕСТАМИ ИЗ ЛАБОРАТОРНОЙ №3
+
 class StudentTable:
     def __init__(self):
         self.db = MemoryDatabase()

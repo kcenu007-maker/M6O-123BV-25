@@ -34,7 +34,6 @@ class InvalidStorageDataError(DatabaseError):
     pass
 
 
-# Сохраняем обратную совместимость с вашей 3-й лабораторной для TUI и тестов
 class StudentTableError(DatabaseError):
     """Базовый класс для ошибок, связанных с таблицей Student (для совместимости)."""
 
